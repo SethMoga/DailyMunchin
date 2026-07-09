@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Calorie Tracker</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Plotly -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body class="p-4">
+
+<div class="container">
+
+	<h2 class="mb-3">Calorie Tracker</h2>
+
+	<!-- Dropdown -->
+	<select id="viewSelect">
+	  <option value="daily">Daily</option>
+	  <option value="weekly">Weekly</option>
+	</select>
+
+	<select id="nutrientSelect">
+	  <option value="Calories">Calories</option>
+	  <option value="Protein">Protein</option>
+	  <option value="Carbohydrates">Carbohydrates</option>
+	  <option value="Total Fat">Total Fat</option>
+	</select>
+
+	<!-- Graph containers -->
+	<div id="caloriePlot" style="width:700px;height:400px;"></div>
+
+</div>
+
+
+<script>
+	// =========================
+	// DATA (MOVE THIS TO TOP)
+	// =========================
+  
+	const data = {{ food_tracking_data | default([]) | tojson }};
+		
+	console.log(data);
+
+/*
+  const data = {
+    date: "2024-02-14",
+    food_items: [
+      {
+        time: "01:20:50",
+        description: "carrot",
+        nutrients: [
+          { name: "Calories", value: 200, unit: "kcal" },
+          { name: "Protein", value: 5, unit: "g" },
+          { name: "Carbohydrates", value: 23, unit: "g" },
+          { name: "Total Fat", value: 8, unit: "g" }
+        ]
+      },
+      {
+        time: "06:23:03",
+        description: "apple",
+        nutrients: [
+          { name: "Calories", value: 180, unit: "kcal" },
+          { name: "Carbohydrates", value: 21, unit: "g" },
+          { name: "Total Fat", value: 0.2, unit: "g" }
+        ]
+      }
+    ]
+  };
+*/
+
+  // Fake weekly structure (for demo consistency)
+  const dayData = {
+    "2024-02-12": data.food_items,
+    "2024-02-13": data.food_items,
+    "2024-02-14": data.food_items
+  };
+
+  // =========================
+  // HELPERS
+  // =========================
+
+  function getNutrient(food, nutrientName) {
+    const c = food.nutrients.find(n => n.name === nutrientName);
+    return c ? c.value : 0;
+  }
+
+  function buildDailyData(nutrientName) {
+    const x = data.food_items.map(item => `${data.date} ${item.time}`);
+    const y = data.food_items.map(item => getNutrient(item, nutrientName));
+    return { x, y };
+  }
+
+  function buildWeeklyData(nutrientName) {
+    const days = Object.keys(dayData).sort();
+
+    const totals = days.map(day => {
+	  const values = dayData[day].map(item =>
+		getNutrient(item, nutrientName)
+	  );
+
+	  return values.reduce((a, b) => a + b, 0);
+	});
+
+    return { days, totals };
+  }
+
+  // =========================
+  // RENDER
+  // =========================
+
+  function renderGraph() {
+    const view = document.getElementById("viewSelect").value;
+    const nutrient = document.getElementById("nutrientSelect").value;
+
+    if (view === "daily") {
+      const { x, y } = buildDailyData(nutrient);
+
+      Plotly.newPlot("caloriePlot", [{
+        x,
+        y,
+        mode: "lines+markers",
+        type: "scatter",
+        name: nutrient
+      }], {
+        title: `Daily ${nutrient}`,
+        xaxis: { title: "Time", type: "date", tickformat: "%-I:%M:%S %p" },
+        yaxis: { title: nutrient }
+      });
+
+    } else {
+      const { days, totals } = buildWeeklyData(nutrient);
+
+      Plotly.newPlot("caloriePlot", [{
+        x: days,
+        y: totals,
+        mode: "lines+markers",
+        type: "scatter",
+        name: `Total ${nutrient}`
+      }], {
+        title: `Weekly ${nutrient}`,
+        xaxis: { title: "Dates", type: "category" },
+        yaxis: { title: nutrient }
+      });
+    }
+  }
+
+  // =========================
+  // EVENTS
+  // =========================
+
+  document.getElementById("viewSelect").addEventListener("change", renderGraph);
+  document.getElementById("nutrientSelect").addEventListener("change", renderGraph);
+
+  renderGraph();
+</script>
+
+</body>
+</html>

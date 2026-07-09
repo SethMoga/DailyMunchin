@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nutrition Calculator</title>
+</head>
+<body>
+
+  <h1>Nutrition Calculator</h1>
+
+  <label>Portion (g): </label>
+  <input type="number" id="portion" min="1" value="100" oninput="updateNutrition()">
+  <input type="number" id="quantity" min="1" value="1" oninput="updateNutrition()">
+
+  <h2>Nutrition Values</h2>
+
+  <label>Calories:</label>
+  <input type="number" id="calories" readonly><br><br>
+
+  <label>Protein (g):</label>
+  <input type="number" id="protein" readonly><br><br>
+
+  <label>Fat (g):</label>
+  <input type="number" id="fat" readonly><br><br>
+
+  <label>Carbohydrates (g):</label>
+  <input type="number" id="carbs" readonly><br><br>
+
+  <script>
+    // Base values per 100g
+    const base = {
+      calories: 200,
+      protein: 10,
+      fat: 5,
+      carbs: 30
+    };
+
+    function updateNutrition() {
+      const portion = parseFloat(document.getElementById("portion").value) || 0;
+	  const quantity = parseInt(document.getElementById("quantity").value) || 0;
+      const factor = portion / 100;
+
+      document.getElementById("calories").value = (base.calories * factor * quantity).toFixed(1);
+      document.getElementById("protein").value = (base.protein * factor * quantity).toFixed(1);
+      document.getElementById("fat").value = (base.fat * factor * quantity).toFixed(1);
+      document.getElementById("carbs").value = (base.carbs * factor * quantity).toFixed(1);
+    }
+
+    // Initialize on page load
+    updateNutrition();
+  </script>
+
+</body>
+</html>

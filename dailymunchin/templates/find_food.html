@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Food</title>
+	
+	<!-- Latest compiled and minified CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+	
+	<!-- Bootstrap 5 Font Icons -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+	
+	<!-- Latest compiled JavaScript -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	<style>
+		.table.table-striped {
+			--bs-table-hover-bg: #ffe8a1;
+		}
+    </style>
+</head>
+<body>
+	<!--HEADER-->
+	<header class="sticky-top shadow">
+		<nav class="navbar navbar-expand-md bg-white">
+			<div class="container-fluid">
+				<a class="navbar-brand" href="/">
+					<img src="{{ url_for('static', filename='images/logo.PNG') }}" alt="DailyMunch-logo" style="height: 64px;">
+				</a>
+				<button class="btn navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#collapsibleNavbar">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<div class="offcanvas offcanvas-top" id="collapsibleNavbar" style="height: 100vh;">
+					<div class="offcanvas-header">
+						<button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+					</div>
+					<div class="offcanvas-body justify-content-end mx-5">
+						<ul class="navbar-nav" style="font-size: 1.44rem;">
+							<li class="nav-item" style="margin-right: 20px;">
+								<a class="nav-link" href="/dashboard">Dashboard</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="/find-food">Find Food</a>
+							</li>    
+						</ul>
+					</div>
+				</div>
+			</div>
+		</nav>
+	</header>
+	<!--HEADER-->
+
+	<div class="container mt-4 mb-5">
+	  <h2 style="color:#22b14c;">Find Food and Start Tracking</h2>
+	  <br>
+	  <!-- Nav tabs -->
+	  <ul class="nav nav-tabs" role="tablist">
+		<li class="nav-item">
+		  <a class="nav-link active" data-bs-toggle="tab" href="#home" style="color: #22b14c">Food Name</a>
+		</li>
+		<li class="nav-item">
+		  <a class="nav-link" data-bs-toggle="tab" href="#menu1" style="color: #22b14c">GTIN/UPC</a>
+		</li>
+	  </ul>
+
+	  <!-- Tab panes -->
+	  <div class="tab-content">
+		<div id="home" class="container tab-pane active"><br>
+			<form action="/search-food" method="GET">
+				<!--
+				<label for="foodname">Enter food:</label>
+				<input id="foodname" name="food-name" type="text" required value="{{ foodname }}">
+				<p>{{ foodname }}</p>
+				<br>
+				
+				Food Type:
+				<input type="radio" name="food-type" value="general" {% if selected_type == "general" %}checked{% endif %} required>
+				<label for="">General</label>
+				
+				<input type="radio" name="food-type" value="branded" {% if selected_type == "branded" %}checked{% endif %}> 
+				<label for="">Branded</label>
+				<br>
+
+				<label for="b">Max Results per Page (1 to 10):</label>
+				<input id="b" name="page-size" type="number" value="{{ page_size  | default(1) }}" min="1" max="10">
+				<br>
+				-->
+
+				<div class="mb-3">
+					<label for="foodname" class="form-label">Enter food:</label>
+					<input id="foodname" name="food-name" type="text" class="form-control" required value="{{ foodname }}" style="width: 50%;">
+				</div>
+
+				<!--<p class="mb-3">{{ foodname }}</p>-->
+
+				<div class="mb-3">
+					<label class="form-label d-block">Food Type:</label>
+
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" name="food-type" value="general"
+						{% if selected_type == "general" %}checked{% endif %} required>
+						<label class="form-check-label">General</label>
+					</div>
+
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" name="food-type" value="branded"
+						{% if selected_type == "branded" %}checked{% endif %}>
+						<label class="form-check-label">Branded</label>
+					</div>
+				</div>
+
+				<div class="mb-3">
+					<label for="b" class="form-label">Max Results per Page (1 to 10):</label>
+					<input id="b" name="page-size" type="number" class="form-control"
+							value="{{ page_size  | default(1) }}" min="1" max="10" style="width: 50%;">
+				</div>
+
+				<input type="submit" value="Search" class="btn my-3" style="background-color: #22b14c; color: white;">
+			</form>
+		</div>
+		
+		<div id="menu1" class="container tab-pane fade"><br>
+			<form action="/barcode-search" method="POST" enctype="multipart/form-data">
+				<!--
+				<h3>Option 1: Type Barcode</h3>
+				<label for="gtin-upc">Enter GTIN/UPC:</label>
+				<input id="gtin-upc" type="text" name="gtin-upc">
+				<br>
+				<h3>Option 2: Upload Barcode Photo</h3>
+				<label for="photo" class="capture-button">Take a Photo of the Barcode</label>
+				<input type="file" id="photo" name="photo-barcode" capture="environment" accept="image/*,video/*">
+				<br>
+				-->
+				<h3 class="mb-3">Option 1: Type Barcode</h3>
+				<div class="mb-3">
+					<label for="gtin-upc" class="form-label">Enter GTIN/UPC:</label>
+					<input id="gtin-upc" type="text" name="gtin-upc" class="form-control" style="width: 50%;">
+				</div>
+
+				<h3 class="mb-3">Option 2: Upload Barcode Photo</h3>
+				<div class="mb-3">
+					<label for="photo" class="form-label" style="width: 50%;">Take a Photo of the Barcode</label>
+					<input type="file" id="photo" name="photo-barcode" capture="environment" accept="image/*,video/*" class="form-control" style="width: 50%;">
+				</div>
+				
+				<input type="submit" value="Search" class="btn my-3" style="background-color: #22b14c; color: white;">
+			</form>
+		</div>
+		
+	  </div>
+	  
+		{% if food_type and food_facts_data %}
+		
+			<div class="overflow-auto" style="max-height: 220px;">
+				<table class="table table-striped table-hover">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Description</th>
+							<th>Category</th>
+							{% if food_type == "Branded" %}
+								<th>Brand</th>
+							{% endif %}
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+					{% for fd in food_facts_data %}
+						<tr id={{ loop.index }}>
+							<td>{{ fd.fdcId }}</td>
+							<td>{{ fd.description }}</td>
+							<td>{{ fd.category }}</td>
+							{% if food_type == "Branded" %}
+								<td>{{ fd.brand }}</td>
+							{% endif %}
+							<td><button class="btn" onclick="addItem({{ loop.index0 }})" style="background-color: #22b14c; color: white;">Add</button></td>
+						</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		
+		{% endif %}
+		
+		
+		<!-- Tester for Pagination START -->
+		{% if page_size is defined and page_number is defined %}
+			{% set current_page_index = page_number - 1 %}
+			
+			{% set remaining_results = 1 if (total_results % (page_size | int) != 0) else 0 %}
+			<!--<p>Remaining Results: {{ remaining_results }}</p>-->
+			
+			{% set total_pages = (total_results + (page_size | int) * remaining_results) // (page_size | int) %}
+			{% set max_visible = total_pages if (total_pages < 5) else 5  %}
+			
+			<!--<p>Total Pages: {{ total_pages }}</p>-->
+			<div><p>{{ total_results }} Results Found</p></div>
+			<div class="container d-flex justify-content-center"><p>Page {{ page_number }} of {{ total_pages }}</p></div>
+			
+			<nav aria-label="Page navigation example">
+				<ul class="pagination justify-content-center">
+					{% set is_first = "disabled" if current_page_index == 0 else "" %}
+					<li class="page-item {{ is_first }}">
+						<a class="page-link" href="/search-food?food-name={{ foodname }}&food-type={{ selected_type }}&page-number=1&page-size={{ page_size }}" style="color:#22b14c;"><i class="bi bi-chevron-double-left"></i></a>
+					</li>
+					
+					{% for i in range((current_page_index if (total_pages - current_page_index >= max_visible) else (total_pages - max_visible)), (total_pages if (total_pages - current_page_index <= max_visible) else (max_visible + current_page_index))) %}
+						<li class="page-item">
+							<a class="page-link" href="/search-food?food-name={{ foodname }}&food-type={{ selected_type }}&page-number={{ i + 1 }}&page-size={{ page_size }}" style="color:#22b14c;">{{ i + 1 }}</a>
+						</li>
+					{% endfor %}
+					
+					{% set is_last = "disabled" if current_page_index == total_pages - 1 else "" %}
+					<li class="page-item {{ is_last }}">
+					  <a class="page-link" href="/search-food?food-name={{ foodname }}&food-type={{ selected_type }}&page-number={{ total_pages }}&page-size={{ page_size }}" style="color:#22b14c;"><i class="bi bi-chevron-double-right"></i></a>
+					</li>
+				</ul>
+			</nav>
+			
+		{% endif %}
+		<!-- Tester for Pagination END -->
+	</div>
+
+	<div class="container mt-3 mb-5">
+		
+		<form id="save-entry" action="/save-entry" method="POST">
+			<div class="container mt-3 accordion" id="results"></div>
+			<input type="submit" value="Save Entry" class="btn my-3" style="background-color: #22b14c; color: white;">
+		</form>
+
+	</div>
+	
+	<script>
+		let isItemAdded = false;
+		
+		const saveEntryForm = document.getElementById("save-entry");
+		
+
+		saveEntryForm.addEventListener('submit', (event) => {
+
+			if (!isItemAdded) {
+				event.preventDefault(); // Prevent form submission
+			}
+		});
+	</script>
+	
+	<script>
+		function updateValue() {
+		  const select = document.getElementById("portion-selection");
+		  const selectedText = select.options[select.selectedIndex].text
+		  const amountInput = document.getElementById("portion-amount");
+		  const unitLabel = document.getElementById("unit-label");
+		  
+		  const arrayValues = select.value.split(" ");
+		  const amount = arrayValues[0];
+		  const unit = arrayValues[arrayValues.length - 1];
+
+		  if (selectedText.includes("Custom")) {
+			// Custom selected → allow editing
+			amountInput.value = amount;
+			unitLabel.value = unit;
+			amountInput.removeAttribute("readonly");
+			amountInput.focus();
+		  } else {
+			// Predefined portion option → set value and lock field
+			amountInput.value = amount;
+			unitLabel.value = unit;
+			amountInput.setAttribute("readonly", true);
+		  }
+		  
+		  console.log(amount);
+		  updateNutrients(amount);
+		}
+	</script>
+	
+	<script>
+		const foodFactsData = {{ food_facts_data | default([]) | tojson }};
+		
+		console.log(foodFactsData);
+		
+		if (Object.keys(foodFactsData).length === 0) {
+			console.log("foodFactsData is empty");
+		} else {
+			console.log("foodFactsData has data");
+		}
+
+		function addItem(itemId) {
+			console.log(foodFactsData[itemId]);
+			let portions = foodFactsData[itemId].portions;
+			let nutrients = foodFactsData[itemId].nutrients;
+
+			const resultsDiv = document.getElementById('results');
+			// Clear previous accordion if it exists
+    		resultsDiv.innerHTML = '';
+			
+			const accordionItem = document.createElement('div');
+			accordionItem.classList.add('accordion-item');
+
+			const accordionHeader = document.createElement('h2');
+			accordionHeader.classList.add('accordion-header');
+
+			const accordionButton = document.createElement('button');
+			accordionButton.classList.add('accordion-button', 'collapsed');
+			accordionButton.setAttribute('type', 'button');
+			accordionButton.setAttribute('data-bs-toggle', 'collapse');
+			accordionButton.setAttribute('data-bs-target', '#new-item-collapse');
+			accordionButton.setAttribute('aria-expanded', 'false');
+			accordionButton.setAttribute('aria-controls', 'new-item-collapse');
+			accordionButton.textContent = `(${foodFactsData[itemId].fdcId}) ${foodFactsData[itemId].description} - ${foodFactsData[itemId].category}`;
+
+			accordionHeader.appendChild(accordionButton);
+			accordionItem.appendChild(accordionHeader);
+
+			const accordionCollapse = document.createElement('div');
+			accordionCollapse.classList.add('accordion-collapse', 'collapse');
+			accordionCollapse.setAttribute('id', 'new-item-collapse');
+			
+			const accordionBody = document.createElement('div');
+			accordionBody.classList.add('accordion-body');
+			
+			const brandInputHTML = foodFactsData[itemId].brand
+				? `<label for="brand-label" class="form-label fw-bold">Brand: </label><input id="brand-label" type="text" name="brand" value="${foodFactsData[itemId].brand}" class="form-control-plaintext" readonly>`
+				: "";
+			
+			<!--generated form inputs (options) -->
+			const portionOptionsHTML = portions.map(p => `
+					<option class="form-control-plaintext" value="${p.size} ${p.unit}">
+						${p.text} (${p.size} ${p.unit})
+					</option>
+			`).join('');
+			
+			<!--generated form inputs -->
+			const nutrientsHTML = nutrients.map(n => `
+				<tr>
+					<td>
+						<input type="text" name="nutrient_name[]" class="form-control-plaintext" value="${n.nutrientName}" readonly>
+					</td>
+					<td>
+						<input type="number" name="nutrient_value[]" class="form-control-plaintext" value="${n.value}" readonly>
+					</td>
+					<td>
+						<input type="text" name="nutrient_unit[]" class="form-control-plaintext" value="${n.unitName}" readonly>
+					</td>
+				</tr>
+			`).join('');
+			
+			<!--generated form inputs -->
+			accordionBody.innerHTML = `
+				<div class="d-flex justify-content-end">
+					<button class="btn btn-danger btn-lg mb-2" onclick="removeAccordion(this)">
+						<i class="bi bi-trash"></i>
+					</button>
+				</div>
+				
+				<div class="mb-3">
+					<label for="description-label" class="form-label fw-bold">Description: </label>
+					<input id="description-label" type="text" name="description" value="${foodFactsData[itemId].description}" class="form-control-plaintext" readonly>
+					<label for="category-label" class="form-label fw-bold">Category: </label>
+					<input id="category-label" type="text" name="category" value="${foodFactsData[itemId].category}" class="form-control-plaintext" readonly>
+					${brandInputHTML}
+				</div>
+
+				<div class="mb-3">
+					<label for="portion-selection" class="form-label fw-bold">Serving Size:</label>
+					
+					<select id="portion-selection" class="form-select" name="portion-selection" onchange="updateValue()" style="width: 50%;">
+						${portionOptionsHTML}
+					</select>
+					<br>
+					<div class="row mb-3">
+						<div class="col-6">
+							<input id="portion-amount" type="number" name="amount"
+								class="form-control"
+								min="1" max="999" required
+								oninput="updateNutrients()">
+						</div>
+						<div class="col-6">
+							<input id="unit-label" type="text" name="unit"
+								class="form-control-plaintext"
+								readonly>
+						</div>
+					</div>
+					
+					<label for="quanity" class="form-label fw-bold">Quantity:</label>
+					<input id="quanity" type="number" name="quanity" class="form-control" min="1" max="99" value="1" required oninput="updateNutrients()" style="width: 20%;">
+				</div>
+
+				<table class="table table-striped table-hover">
+					<thead>
+						<tr>
+							<th>Nutrient</th>
+							<th>Amount</th>
+							<th>Unit</th>
+						</tr>
+					</thead>
+					<tbody id="nutrients-body">
+						${nutrientsHTML}
+					</tbody>
+				</table>
+			`;
+
+			accordionCollapse.appendChild(accordionBody);
+			accordionItem.appendChild(accordionCollapse);
+			resultsDiv.appendChild(accordionItem);
+			
+			<!--Selects the first option "Custom" by default-->
+			document.getElementById("portion-selection").selectedIndex = 0;
+			<!--Initialize input field when accordionItem has been created-->
+			updateValue()
+			
+			isItemAdded = true;
+		}
+
+		function removeAccordion() {
+			const resultsDiv = document.getElementById('results');
+			resultsDiv.innerHTML = '';
+			isItemAdded = false;
+		}
+		
+	</script>
+	
+	<script>
+
+		function updateNutrients() {
+			const portion = Math.abs(parseFloat(document.getElementById("portion-amount").value) || 1);
+			const quantity = Math.abs(parseFloat(document.getElementById("quanity").value) || 1);
+
+			const rows = document.querySelectorAll('#nutrients-body tr');
+
+			rows.forEach(row => {
+				const valueInput = row.querySelector('input[name="nutrient_value[]"]');
+
+				const original = parseFloat(
+					valueInput.dataset.originalValue || valueInput.value
+				);
+
+				if (!valueInput.dataset.originalValue) {
+					valueInput.dataset.originalValue = original;
+				}
+
+				const result = original * (portion / 100) * quantity;
+
+				valueInput.value = result.toFixed(2);
+			});
+		}
+	</script>
+	
+</body>
+</html>

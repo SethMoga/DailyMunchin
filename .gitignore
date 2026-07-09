@@ -1,0 +1,13 @@
+# Python virtual environment inside dailymunchin
+dailymunchin/Include/
+dailymunchin/Lib/
+dailymunchin/Scripts/
+dailymunchin/pyvenv.cfg
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Optional: IDE/editor files
+.vscode/
+*.idea/
