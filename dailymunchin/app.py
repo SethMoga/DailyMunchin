@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 from datetime import datetime, timedelta, UTC
 from pymongo import MongoClient
 
@@ -6,9 +7,12 @@ from pyzbar.pyzbar import decode
 from PIL import Image
 import requests
 from pprint import pprint
+import os
 
+load_dotenv()
 
-client = MongoClient("mongodb://localhost:27017/")
+#   client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient(os.getenv("MONGO_URI"))
 db = client["testdb"]
 foodtracking_col = db["food_trackings"]
 user_collection = db["users"]
