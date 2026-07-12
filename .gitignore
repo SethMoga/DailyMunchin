@@ -1,3 +1,7 @@
+# Environment variables / secrets
+.env
+*.env
+
 # Python virtual environment inside dailymunchin
 dailymunchin/Include/
 dailymunchin/Lib/
