@@ -19,6 +19,12 @@ user_collection = db["users"]
 #   db = client["food_app"]
 #   collection = db["entries"]
 
+try:
+    client.admin.command("ping")
+    print("MongoDB connection successful!")
+except Exception as e:
+    print("MongoDB connection failed:", e)
+
 
 API_KEY = "vsfR0qgdNoiEnOd6EjOqe4Gpm3pEccAcq2vEEuPI"
 url = "https://api.nal.usda.gov/fdc/v1/foods/search"
