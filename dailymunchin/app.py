@@ -12,7 +12,7 @@ import os
 load_dotenv()
 
 #   client = MongoClient("mongodb://localhost:27017/")
-client = MongoClient(os.getenv("MONGO_URI"))
+client = MongoClient(os.getenv("MONGO_URI"), tls=True)
 db = client["testdb"]
 foodtracking_col = db["food_trackings"]
 user_collection = db["users"]
