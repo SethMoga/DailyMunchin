@@ -26,7 +26,7 @@ except Exception as e:
     print("MongoDB connection failed:", e)
 
 
-API_KEY = "vsfR0qgdNoiEnOd6EjOqe4Gpm3pEccAcq2vEEuPI"
+API_KEY = os.getenv("USDA_API_KEY")
 url = "https://api.nal.usda.gov/fdc/v1/foods/search"
 KEYWORDS = ("energy", "protein", "fat", "sugar", "carbohydrate", "water", "vitamin", "cholesterol", "sodium", "fiber", "calcium", "iron", "potassium", "zinc", "magnesium", "phosphorus", "selenium", "thiamin", "theobromine", "caffeine", "riboflavin", "copper", "niacin")
 UNITS = ("KCAL", "G", "MG", "UG", "IU")
@@ -208,7 +208,7 @@ def barcode_search():
                     return redirect(url_for('find_food'))
                 
                 params = {
-                    "api_key": "vsfR0qgdNoiEnOd6EjOqe4Gpm3pEccAcq2vEEuPI",
+                    "api_key": API_KEY,
                     "query": my_barcode,
                     "dataType": [food_type],
                     "pageSize": 1,
@@ -463,7 +463,7 @@ def apiUSDA(barcode):
     url = "https://api.nal.usda.gov/fdc/v1/foods/search"
 
     params = {
-        "api_key": "vsfR0qgdNoiEnOd6EjOqe4Gpm3pEccAcq2vEEuPI",
+        "api_key": API_KEY,
         "query": barcode,
         "pageSize": 1
     }
